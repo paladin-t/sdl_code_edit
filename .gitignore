@@ -1,0 +1,16 @@
+/.vs/sdl_code_edit/v14
+/enc_temp_folder
+/debug
+/release
+/x64
+/sdl_code_edit.VC.db
+/sdl_code_edit.VC.VC.opendb
+*.DS_Store
+*.exp
+*.idb
+*.ilk
+*.iobj
+*.ipdb
+*.ncb
+*.obj
+*.suo
