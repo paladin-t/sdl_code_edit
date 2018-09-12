@@ -5,7 +5,7 @@
 **
 ** A code edit widget in plain SDL.
 **
-** For the latest info, see https://github.io/paladin-t/sdl_code_edit/
+** For the latest info, see https://github.com/paladin-t/sdl_code_edit/
 */
 
 #include "code_edit.h"
