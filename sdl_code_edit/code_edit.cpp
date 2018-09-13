@@ -23,17 +23,9 @@
 #	define CODE_EDIT_EPSILON 0.0001f
 #endif /* CODE_EDIT_EPSILON */
 
-#ifndef CODE_EDIT_CHAR_ADVANCE_WIDTH
-#	define CODE_EDIT_CHAR_ADVANCE_WIDTH 8
-#endif /* CODE_EDIT_CHAR_ADVANCE_WIDTH */
-
-#ifndef CODE_EDIT_CHAR_HEIGHT
-#	define CODE_EDIT_CHAR_HEIGHT 8
-#endif /* CODE_EDIT_CHAR_HEIGHT */
-
-#ifndef CODE_EDIT_UTF8_CHAR_WIDTH
-#	define CODE_EDIT_UTF8_CHAR_WIDTH 2
-#endif /* CODE_EDIT_UTF8_CHAR_WIDTH */
+#ifndef CODE_EDIT_UTF8_CHAR_FACTOR
+#	define CODE_EDIT_UTF8_CHAR_FACTOR 2
+#endif /* CODE_EDIT_UTF8_CHAR_FACTOR */
 
 #ifndef CODE_EDIT_MERGE_UNDO_REDO
 #	define CODE_EDIT_MERGE_UNDO_REDO 1
@@ -173,7 +165,7 @@ static int charToUtf8(char* buf, int buf_size, unsigned int c) {
 	}
 }
 
-static int strFromUtf8(CodeEdit::CodePoint* buf, int buf_size, const char* in_text, const char* in_text_end, const char** in_text_remaining = NULL) {
+static int strFromUtf8(CodeEdit::CodePoint* buf, int buf_size, const char* in_text, const char* in_text_end, const char** in_text_remaining = nullptr) {
 	CodeEdit::CodePoint* buf_out = buf;
 	CodeEdit::CodePoint* buf_end = buf + buf_size;
 	while (buf_out < buf_end - 1 && (!in_text_end || in_text < in_text_end) && *in_text) {
@@ -1106,6 +1098,14 @@ void CodeEdit::setPalette(const Palette &val) {
 	_palette = val;
 }
 
+const CodeEdit::Vec2 &CodeEdit::getCharacterSize(void) const {
+	return _characterSize;
+}
+
+void CodeEdit::setCharacterSize(const Vec2 &val) {
+	_characterSize = val;
+}
+
 void CodeEdit::setErrorMarkers(const ErrorMarkers &val) {
 	_errorMarkers = val;
 }
@@ -1140,8 +1140,8 @@ void CodeEdit::render(void* rnd) {
 
 	_withinRender = true;
 
-	const float xadv = CODE_EDIT_CHAR_ADVANCE_WIDTH;
-	_charAdv = Vec2(xadv, CODE_EDIT_CHAR_HEIGHT + _lineSpacing);
+	const float xadv = _characterSize.x;
+	_charAdv = Vec2(xadv, _characterSize.y + _lineSpacing);
 	if (_codeLines.size() >= 10000)
 		_textStart = 7;
 	else if (_codeLines.size() >= 1000)
@@ -1294,7 +1294,7 @@ void CodeEdit::render(void* rnd) {
 	const float scrollY = getScrollY();
 
 	int lineNo = (int)floor(scrollY / _charAdv.y);
-	const int lineMax = std::max(0, std::min((int)_codeLines.size() - 1, lineNo + (int)ceil((scrollY + contentSize.y) / _charAdv.y)));
+	const int lineMax = std::max(0, std::min((int)_codeLines.size() - 1, lineNo + (int)ceil(contentSize.y / _charAdv.y)));
 	if (!_codeLines.empty()) {
 		while (lineNo <= lineMax) {
 			Vec2 lineStartScreenPos(
@@ -2295,7 +2295,7 @@ void CodeEdit::addInputCharacter(CodeEdit::CodePoint cp) {
 
 void CodeEdit::addInputCharactersUtf8(const char* utf8Chars) {
 	CodeEdit::CodePoint wchars[17];
-	strFromUtf8(wchars, countof(wchars), utf8Chars, NULL);
+	strFromUtf8(wchars, countof(wchars), utf8Chars, nullptr);
 	for (int i = 0; i < countof(wchars) && wchars[i] != 0; i++)
 		addInputCharacter(wchars[i]);
 }
@@ -2810,9 +2810,9 @@ int CodeEdit::getCharacterWidth(const Glyph &g) const {
 	}
 
 	if (!isPrintable(cp)) {
-		const float cadvx = CODE_EDIT_CHAR_ADVANCE_WIDTH;
+		const float cadvx = _characterSize.x;
 		if (cadvx > _charAdv.x)
-			return CODE_EDIT_UTF8_CHAR_WIDTH;
+			return CODE_EDIT_UTF8_CHAR_FACTOR;
 		else
 			return 1;
 	} else {

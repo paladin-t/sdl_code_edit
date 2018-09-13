@@ -232,6 +232,9 @@ public:
 	const Palette &getPalette(void) const;
 	void setPalette(const Palette &val);
 
+	const Vec2 &getCharacterSize(void) const;
+	void setCharacterSize(const Vec2 &val);
+
 	void setErrorMarkers(const ErrorMarkers &val);
 	void clearErrorMarkers(void);
 	void setBreakpoints(const Breakpoints &val);
@@ -451,8 +454,9 @@ protected:
 	ErrorMarkers _errorMarkers;
 	Coordinates _interactiveStart, _interactiveEnd;
 
-	Palette _palette;
 	LanguageDefinition _langDef;
+	Palette _palette;
+	Vec2 _characterSize = Vec2(8, 8);
 	RegexList _regexes;
 
 	Vec2 _widgetPos;
