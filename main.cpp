@@ -136,6 +136,8 @@ private:
 	int _mouseClickedCount = 0;
 
 public:
+	CodeEditAdapter() {
+	}
 	virtual ~CodeEditAdapter() override {
 	}
 
@@ -239,36 +241,36 @@ private:
 		scrollBar(
 			_horizontalScrollBar, 0,
 			[&] (void) -> float { return getScrollX(); },
-			[&] (float val) -> void { setScrollX(val); },
-			[&] (const CodeEdit::Vec2 &wndPos, const CodeEdit::Vec2 &wndSize, float barSize, float offset) {
-				_horizontalScrollBar.point0(CodeEdit::Vec2(wndPos.x + offset, wndPos.y + wndSize.y + 1));
-				_horizontalScrollBar.point1(CodeEdit::Vec2(wndPos.x + offset + barSize, wndPos.y + wndSize.y + SCROLL_BAR_SIZE));
-			}
+			[&] (float val) -> void { setScrollX(val); }
 		);
 	}
 	void verticalScrollBar(void) {
 		scrollBar(
 			_verticalScrollBar, 1,
 			[&] (void) -> float { return getScrollY(); },
-			[&] (float val) -> void { setScrollY(val); },
-			[&] (const CodeEdit::Vec2 &wndPos, const CodeEdit::Vec2 &wndSize, float barSize, float offset) {
-				_verticalScrollBar.point0(CodeEdit::Vec2(wndPos.x + wndSize.x + 1, wndPos.y + offset));
-				_verticalScrollBar.point1(CodeEdit::Vec2(wndPos.x + wndSize.x + SCROLL_BAR_SIZE, wndPos.y + offset + barSize));
-			}
+			[&] (float val) -> void { setScrollY(val); }
 		);
 	}
 
-	void scrollBar(ScrollBar &bar, size_t comp, std::function<float (void)> getScroll, std::function<void (float)> setScroll, std::function<void(const CodeEdit::Vec2 &, const CodeEdit::Vec2 &, float, float)> resize) {
+	void scrollBar(ScrollBar &bar, size_t comp, std::function<float (void)> getScroll, std::function<void (float)> setScroll) {
+		assert(comp == 0 || comp == 1);
+
 		const CodeEdit::Vec2 &wndPos = getWidgetPos();
 		const CodeEdit::Vec2 &wndSize = getWidgetSize();
 		const CodeEdit::Vec2 &contentSize = getContentSize();
 
-		const float barSize = std::min((wndSize[comp] / contentSize[comp]) * wndSize[comp], wndSize[comp]);
+		const float barSize = std::max(std::min((wndSize[comp] / contentSize[comp]) * wndSize[comp], wndSize[comp]), SCROLL_BAR_SIZE * 2.0f);
 		const float percent = clamp(getScroll() / (contentSize[comp] - wndSize[comp]), 0.0f, 1.0f);
 		const float slide = wndSize[comp] - barSize;
 		const float offset = slide * percent;
 
-		resize(wndPos, wndSize, barSize, offset);
+		if (comp == 0) {
+			bar.point0(CodeEdit::Vec2(wndPos.x + offset, wndPos.y + wndSize.y + 1));
+			bar.point1(CodeEdit::Vec2(wndPos.x + offset + barSize, wndPos.y + wndSize.y + SCROLL_BAR_SIZE));
+		} else {
+			bar.point0(CodeEdit::Vec2(wndPos.x + wndSize.x + 1, wndPos.y + offset));
+			bar.point1(CodeEdit::Vec2(wndPos.x + wndSize.x + SCROLL_BAR_SIZE, wndPos.y + offset + barSize));
+		}
 
 		roundedBoxColor(
 			_renderer,
