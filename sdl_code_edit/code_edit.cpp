@@ -43,7 +43,7 @@ static_assert(sizeof(CodeEdit::Keycode) == sizeof(SDL_Keycode), "Wrong type size
 
 static const int COLORIZE_DELAY_FRAME_COUNT = 60;
 
-static bool isPrintable(CodeEdit::CodePoint cp) {
+static bool isPrintable(int cp) {
 	if (cp > 255) return false;
 
 	return !!::isprint(cp);
@@ -1038,9 +1038,9 @@ CodeEdit::Glyph::Glyph(CodeEdit::Char ch, PaletteIndex idx) : character(ch), col
 	} else {
 		const char* txt = (const char*)(&ch);
 		const char* tend = txt + sizeof(CodeEdit::Char);
-		unsigned int codepoint = 0;
-		charFromUtf8(&codepoint, txt, tend);
-		codepoint = (CodeEdit::CodePoint)codepoint;
+		unsigned int cp = 0;
+		charFromUtf8(&cp, txt, tend);
+		codepoint = (CodeEdit::CodePoint)cp;
 	}
 }
 
