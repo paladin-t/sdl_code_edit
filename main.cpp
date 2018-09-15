@@ -219,7 +219,7 @@ public:
 		setFrameCount(getFrameCount() + 1);
 
 		updateKeyStates();
-		updateMouseStates(_mouseClickedCount);
+		updateMouseStates(_mouseClickedCount, nullptr);
 		_mouseClickedCount = 0;
 
 		CodeEdit::render(_renderer);

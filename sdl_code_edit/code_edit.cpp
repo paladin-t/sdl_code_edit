@@ -8,6 +8,7 @@
 ** For the latest info, see https://github.com/paladin-t/sdl_code_edit/
 */
 
+#define NOMINMAX
 #include "code_edit.h"
 #include "../sdl_gfx/SDL2_gfxPrimitives.h"
 #include <SDL.h>
@@ -1131,7 +1132,7 @@ void CodeEdit::render(void* rnd) {
 		(int)getWidgetPos().x, (int)getWidgetPos().y,
 		(int)getWidgetSize().x, (int)getWidgetSize().y
 	};
-	const float offsetCode = (_charAdv.x * _textStart + _charAdv.x * 1.0f) - getWidgetPos().x;
+	const float offsetCode = _charAdv.x * _textStart;
 	const SDL_Rect rectCode{
 		(int)(getWidgetPos().x + offsetCode), (int)getWidgetPos().y,
 		(int)(getWidgetSize().x - offsetCode), (int)getWidgetSize().y
@@ -2408,10 +2409,11 @@ bool CodeEdit::isMouseDown(void) const {
 	return _mouseDown;
 }
 
-void CodeEdit::updateMouseStates(int mouseClickCount) {
+void CodeEdit::updateMouseStates(int mouseClickCount, const Vec2* scale) {
 	if (!_mouseDragged)
 		_mouseClickCount = mouseClickCount;
 
+	const Vec2 mscale = scale ? *scale : Vec2(1, 1);
 	int tx = 0, ty = 0, tw = 0, th = 0;
 	int x_ = 0, y_ = 0;
 	int dispw = 0, disph = 0;
@@ -2422,9 +2424,9 @@ void CodeEdit::updateMouseStates(int mouseClickCount) {
 	dispw = tw;
 	disph = th;
 
-	auto clicked = [] (const Vec2 &widgetPos, const Vec2 &widgetSz, Vec2 &mousePos, Vec2 &mouseDownPos, bool &mouseDown, bool &mouseClicked, bool &mouseDragged, bool &widgetFocused, int x, int y) {
-		mousePos.x = (float)x;
-		mousePos.y = (float)y;
+	auto clicked = [] (const Vec2 &widgetPos, const Vec2 &widgetSz, const Vec2 &mscale, Vec2 &mousePos, Vec2 &mouseDownPos, bool &mouseDown, bool &mouseClicked, bool &mouseDragged, bool &widgetFocused, int x, int y) {
+		mousePos.x = (float)x * mscale.x;
+		mousePos.y = (float)y * mscale.y;
 		if (!mouseDown) {
 			mouseDownPos = mousePos;
 			mouseClicked = true;
@@ -2451,7 +2453,7 @@ void CodeEdit::updateMouseStates(int mouseClickCount) {
 			x_ = (int)(finger->x * ((float)dispw - CODE_EDIT_EPSILON));
 			y_ = (int)(finger->y * ((float)disph - CODE_EDIT_EPSILON));
 
-			clicked(getWidgetPos(), getWidgetSize(), _mousePos, _mouseDownPos, _mouseDown, _mousePressed, _mouseDragged, _widgetFocused, x_, y_);
+			clicked(getWidgetPos(), getWidgetSize(), mscale, _mousePos, _mouseDownPos, _mouseDown, _mousePressed, _mouseDragged, _widgetFocused, x_, y_);
 
 			return;
 		} while (false);
@@ -2459,13 +2461,13 @@ void CodeEdit::updateMouseStates(int mouseClickCount) {
 
 	Uint32 btns = SDL_GetMouseState(&x_, &y_);
 	if (!!(btns & SDL_BUTTON(SDL_BUTTON_LEFT))) {
-		clicked(getWidgetPos(), getWidgetSize(), _mousePos, _mouseDownPos, _mouseDown, _mousePressed, _mouseDragged, _widgetFocused, x_, y_);
+		clicked(getWidgetPos(), getWidgetSize(), mscale, _mousePos, _mouseDownPos, _mouseDown, _mousePressed, _mouseDragged, _widgetFocused, x_, y_);
 
 		return;
 	}
 
-	_mousePos.x = (float)x_;
-	_mousePos.y = (float)y_;
+	_mousePos.x = (float)x_ * mscale.x;
+	_mousePos.y = (float)y_ * mscale.y;
 
 	_mouseDown = false;
 	_mouseDragged = false;

@@ -344,7 +344,7 @@ public:
 	bool isMouseDoubleClicked(void) const;
 	bool isMouseDragging(void) const;
 	bool isMouseDown(void) const;
-	void updateMouseStates(int mouseClickCount);
+	void updateMouseStates(int mouseClickCount, const Vec2* scale);
 
 	static const Palette &DarkPalette(void);
 	static const Palette &LightPalette(void);
