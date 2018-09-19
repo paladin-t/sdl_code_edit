@@ -250,7 +250,7 @@ public:
 	void setChangesSaved(void);
 
 	std::vector<std::string> getTextLines(bool includeComment, bool includeString) const;
-	std::string getText(void) const;
+	std::string getText(const char* newLine = "\n") const;
 	void setText(const std::string &txt);
 
 	void insertText(const char* val);
@@ -406,7 +406,7 @@ protected:
 	Coordinates screenPosToCoordinates(const Vec2 &pos) const;
 	bool isOnWordBoundary(const Coordinates &at) const;
 	void addUndo(UndoRecord &val);
-	std::string getText(const Coordinates &start, const Coordinates &end) const;
+	std::string getText(const Coordinates &start, const Coordinates &end, const char* newLine = "\n") const;
 	int appendBuffer(std::string &buf, const Glyph &g, int idx, int &width);
 	int insertTextAt(Coordinates &where, const char* val);
 	void removeRange(const Coordinates &start, const Coordinates &end);

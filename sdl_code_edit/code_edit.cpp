@@ -1128,6 +1128,7 @@ void CodeEdit::clearBrakpoints(void) {
 void CodeEdit::render(void* rnd) {
 	SDL_Renderer* renderer = (SDL_Renderer*)rnd;
 
+	constexpr float heightOffset = 1.0f;
 	const SDL_Rect rectContent{
 		(int)getWidgetPos().x, (int)getWidgetPos().y,
 		(int)getWidgetSize().x, (int)getWidgetSize().y
@@ -1210,8 +1211,10 @@ void CodeEdit::render(void* rnd) {
 
 		if (!isReadonly()) {
 			if (isKeyPressed(SDLK_RETURN) || onKeyPressed(SDLK_RETURN)) {
-				unsigned int c = '\n'; // Inserts new line.
-				addInputCharacter((CodeEdit::CodePoint)c);
+				if (!alt) {
+					unsigned int c = '\n'; // Inserts new line.
+					addInputCharacter((CodeEdit::CodePoint)c);
+				}
 			} else if (isKeyPressed(SDLK_TAB)) {
 				if (hasSelection() && getSelectionLines() > 1) {
 					if (!ctrl && !alt && !shift) // Indents multi-lines.
@@ -1329,7 +1332,7 @@ void CodeEdit::render(void* rnd) {
 				Clipper clipCode(renderer, rectCode);
 
 				const Vec2 vstart(lineStartScreenPos.x + (_charAdv.x) * (sstart + _textStart), lineStartScreenPos.y);
-				const Vec2 vend(lineStartScreenPos.x + (_charAdv.x) * (ssend + _textStart), lineStartScreenPos.y + _charAdv.y);
+				const Vec2 vend(lineStartScreenPos.x + (_charAdv.x) * (ssend + _textStart), lineStartScreenPos.y + _charAdv.y - heightOffset);
 				boxColor(renderer, (Sint16)vstart.x, (Sint16)vstart.y, (Sint16)vend.x, (Sint16)vend.y, _palette[(int)PaletteIndex::Selection]);
 			}
 
@@ -1338,7 +1341,7 @@ void CodeEdit::render(void* rnd) {
 			if (_breakpoints.find(lineNo + 1) != _breakpoints.end()) {
 				Clipper clipCode(renderer, rectCode);
 
-				const Vec2 end(lineStartScreenPos.x + contentSize.x + 2.0f * scrollX, lineStartScreenPos.y + _charAdv.y);
+				const Vec2 end(lineStartScreenPos.x + contentSize.x + 2.0f * scrollX, lineStartScreenPos.y + _charAdv.y - heightOffset);
 				boxColor(renderer, (Sint16)start.x, (Sint16)start.y, (Sint16)end.x, (Sint16)end.y, _palette[(int)PaletteIndex::Breakpoint]);
 			}
 
@@ -1346,7 +1349,7 @@ void CodeEdit::render(void* rnd) {
 			if (errorIt != _errorMarkers.end()) {
 				Clipper clipCode(renderer, rectCode);
 
-				const Vec2 end(lineStartScreenPos.x + contentSize.x + 2.0f * scrollX, lineStartScreenPos.y + _charAdv.y);
+				const Vec2 end(lineStartScreenPos.x + contentSize.x + 2.0f * scrollX, lineStartScreenPos.y + _charAdv.y - heightOffset);
 				boxColor(renderer, (Sint16)start.x, (Sint16)start.y, (Sint16)end.x, (Sint16)end.y, _palette[(int)PaletteIndex::ErrorMarker]);
 
 				//if (_tooltipEnabled) {
@@ -1380,7 +1383,7 @@ void CodeEdit::render(void* rnd) {
 				boxColor(
 					renderer,
 					(Sint16)(lineStartScreenPos.x + scrollX + _charAdv.x * (_textStart - 1)), (Sint16)lineStartScreenPos.y,
-					(Sint16)(lineStartScreenPos.x + scrollX + _charAdv.x * (_textStart - 1) + _charAdv.x * 0.5f), (Sint16)(lineStartScreenPos.y + _charAdv.y),
+					(Sint16)(lineStartScreenPos.x + scrollX + _charAdv.x * (_textStart - 1) + _charAdv.x * 0.5f), (Sint16)(lineStartScreenPos.y + _charAdv.y - heightOffset),
 					_palette[(int)PaletteIndex::LineEdited]
 				);
 
@@ -1389,7 +1392,7 @@ void CodeEdit::render(void* rnd) {
 				boxColor(
 					renderer,
 					(Sint16)(lineStartScreenPos.x + scrollX + _charAdv.x * (_textStart - 1)), (Sint16)lineStartScreenPos.y,
-					(Sint16)(lineStartScreenPos.x + scrollX + _charAdv.x * (_textStart - 1) + _charAdv.x * 0.5f), (Sint16)(lineStartScreenPos.y + _charAdv.y),
+					(Sint16)(lineStartScreenPos.x + scrollX + _charAdv.x * (_textStart - 1) + _charAdv.x * 0.5f), (Sint16)(lineStartScreenPos.y + _charAdv.y - heightOffset),
 					_palette[(int)PaletteIndex::LineEditedSaved]
 				);
 
@@ -1398,7 +1401,7 @@ void CodeEdit::render(void* rnd) {
 				boxColor(
 					renderer,
 					(Sint16)(lineStartScreenPos.x + scrollX + _charAdv.x * (_textStart - 1)), (Sint16)lineStartScreenPos.y,
-					(Sint16)(lineStartScreenPos.x + scrollX + _charAdv.x * (_textStart - 1) + _charAdv.x * 0.5f), (Sint16)(lineStartScreenPos.y + _charAdv.y),
+					(Sint16)(lineStartScreenPos.x + scrollX + _charAdv.x * (_textStart - 1) + _charAdv.x * 0.5f), (Sint16)(lineStartScreenPos.y + _charAdv.y - heightOffset),
 					_palette[(int)PaletteIndex::LineEditedReverted]
 				);
 
@@ -1409,9 +1412,9 @@ void CodeEdit::render(void* rnd) {
 				const bool focused = isWidgetFocused();
 
 				if (!hasSelection()) {
-					const Vec2 end(start.x + contentSize.x, start.y + _charAdv.y);
+					const Vec2 end(start.x + contentSize.x, start.y + _charAdv.y - heightOffset);
 					boxColor(renderer, (Sint16)start.x, (Sint16)start.y, (Sint16)end.x, (Sint16)end.y, _palette[(int)(focused ? PaletteIndex::CurrentLineFill : PaletteIndex::CurrentLineFillInactive)]);
-					rectangleColor(renderer, (Sint16)start.x, (Sint16)start.y, (Sint16)end.x, (Sint16)end.y, _palette[(int)PaletteIndex::CurrentLineEdge]);
+					rectangleColor(renderer, (Sint16)start.x, (Sint16)start.y, (Sint16)end.x, (Sint16)end.y + 1, _palette[(int)PaletteIndex::CurrentLineEdge]);
 				}
 
 				const int cx = textDistanceToLineStart(_state.cursorPosition);
@@ -1425,7 +1428,7 @@ void CodeEdit::render(void* rnd) {
 					if (elapsed > 400) {
 						Clipper clipCode(renderer, rectCode);
 
-						const Vec2 cend(lineStartScreenPos.x + _charAdv.x * (cx + _textStart) + (_overwrite ? _charAdv.x : 1.0f), lineStartScreenPos.y + _charAdv.y);
+						const Vec2 cend(lineStartScreenPos.x + _charAdv.x * (cx + _textStart) + (_overwrite ? _charAdv.x : 1.0f), lineStartScreenPos.y + _charAdv.y - heightOffset);
 						boxColor(renderer, (Sint16)cstart.x, (Sint16)cstart.y, (Sint16)cend.x, (Sint16)cend.y, _palette[(int)PaletteIndex::Cursor]);
 						if (elapsed > 800)
 							timeStart = timeEnd;
@@ -1550,8 +1553,8 @@ std::vector<std::string> CodeEdit::getTextLines(bool includeComment, bool includ
 	return result;
 }
 
-std::string CodeEdit::getText(void) const {
-	return getText(Coordinates(), Coordinates((int)_codeLines.size(), 0));
+std::string CodeEdit::getText(const char* newLine) const {
+	return getText(Coordinates(), Coordinates((int)_codeLines.size(), 0), newLine);
 }
 
 void CodeEdit::setText(const std::string &txt) {
@@ -2872,13 +2875,13 @@ void CodeEdit::addUndo(UndoRecord &val) {
 	++_undoIndex;
 }
 
-std::string CodeEdit::getText(const Coordinates &start, const Coordinates &end) const {
+std::string CodeEdit::getText(const Coordinates &start, const Coordinates &end, const char* newLine) const {
 	std::string result;
 
 	int prevLineNo = start.line;
 	for (Coordinates it = start; it <= end; advance(it)) {
 		if (prevLineNo != it.line && it.line < (int)_codeLines.size())
-			result.push_back('\n');
+			result += newLine;
 
 		if (it == end)
 			break;
