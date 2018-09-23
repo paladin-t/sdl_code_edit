@@ -751,7 +751,7 @@ CodeEdit::LanguageDefinition CodeEdit::LanguageDefinition::BASIC8(void) {
 			/* File. */
 			"file", "read_line", "write", "write_u8", "write_s8", "write_u16", "write_s16", "write_int", "write_real", "write_line",
 			/* GUI. */
-			"msgbox",
+			"msgbox", "open_file_dialog", "save_file_dialog", "pick_directory_dialog",
 			/* Image. */
 			"image",
 			/* IO. */
