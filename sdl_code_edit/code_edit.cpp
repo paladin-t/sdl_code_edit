@@ -2274,7 +2274,7 @@ float CodeEdit::getScrollX(void) const {
 }
 
 void CodeEdit::setScrollX(float val) {
-	_scrollX = val;
+	_scrollX = std::max(val, 0.0f);
 }
 
 float CodeEdit::getScrollY(void) const {
@@ -2282,7 +2282,7 @@ float CodeEdit::getScrollY(void) const {
 }
 
 void CodeEdit::setScrollY(float val) {
-	_scrollY = val;
+	_scrollY = std::max(val, 0.0f);
 }
 
 unsigned CodeEdit::getFrameCount(void) const {

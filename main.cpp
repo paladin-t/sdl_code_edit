@@ -48,6 +48,10 @@ template<typename T> T clamp(T v, T lo, T hi) {
 	return v;
 }
 
+template<typename T> bool intersects(T px, T py, T x0, T y0, T x1, T y1) {
+	return (px > std::min(x0, x1) && px < std::max(x0, x1)) && (py > std::min(y0, y1) && py < std::max(y0, y1));
+}
+
 static void openTerminal(void) {
 	long hConHandle;
 	HANDLE lStdHandle;
@@ -114,7 +118,7 @@ private:
 				return;
 			if (edit->getActive())
 				return;
-			if ((pos.x > _point0.x && pos.x < _point1.x) && (pos.y > _point0.y && pos.y < _point1.y)) {
+			if (intersects(pos.x, pos.y, _point0.x, _point0.y, _point1.x, _point1.y)) {
 				_mouseDownOffset = offset;
 				_mouseDownPos = CodeEdit::Vec2(pos.x, pos.y);
 				_mouseDown = true;
@@ -283,6 +287,26 @@ private:
 			const CodeEdit::Vec2 &pos = getMousePos();
 			if (!bar.isMouseDown()) {
 				bar.checkMouseDown(this, pos, offset);
+				if (!bar.isMouseDown()) {
+					bool force = false;
+					if (comp == 0) {
+						force = intersects(
+							pos.x, pos.y,
+							wndPos.x, wndPos.y + wndSize.y,
+							wndPos.x + wndSize.x, wndPos.y + wndSize.y + SCROLL_BAR_SIZE
+						);
+					} else {
+						force = intersects(
+							pos.x, pos.y,
+							wndPos.x + wndSize.x, wndPos.y,
+							wndPos.x + wndSize.x + SCROLL_BAR_SIZE, wndPos.y + wndSize.y
+						);
+					}
+					if (force) {
+						const float p = (pos[comp] - wndPos[comp] - barSize / 2.0f) / wndSize[comp] * contentSize[comp];
+						setScroll(p);
+					}
+				}
 			} else {
 				setWidgetHoverable(false);
 				const CodeEdit::Vec2 &downPos =bar.getMouseDownPos();
