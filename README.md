@@ -10,7 +10,8 @@ This is a simple widget that provides source code editing functionality with bas
 
 * Implements typical code editor look and feel
 * Supports essential mouse and keyboard work
-* Tab/Shift+Tab to indent/unindent
+* Simple automatic indent
+* Tab/Shift+Tab to indent/unindent manually
 * Ctrl+Z/Ctrl+Y to undo/redo; similar records can be merged
 * Customizable language syntax; supports case-insensitive language
 * Customizable color palette
