@@ -2412,7 +2412,7 @@ bool CodeEdit::isMouseDown(void) const {
 	return _mouseDown;
 }
 
-void CodeEdit::updateMouseStates(int mouseClickCount, const Vec2* scale) {
+void CodeEdit::updateMouseStates(int mouseClickCount, const Vec4* frame, const Vec2* scale) {
 	if (!_mouseDragged)
 		_mouseClickCount = mouseClickCount;
 
@@ -2427,7 +2427,11 @@ void CodeEdit::updateMouseStates(int mouseClickCount, const Vec2* scale) {
 	dispw = tw;
 	disph = th;
 
-	auto clicked = [] (const Vec2 &widgetPos, const Vec2 &widgetSz, const Vec2 &mscale, Vec2 &mousePos, Vec2 &mouseDownPos, bool &mouseDown, bool &mouseClicked, bool &mouseDragged, bool &widgetFocused, int x, int y) {
+	auto clicked = [] (const Vec4* frame, const Vec2 &widgetPos, const Vec2 &widgetSz, const Vec2 &mscale, Vec2 &mousePos, Vec2 &mouseDownPos, bool &mouseDown, bool &mouseClicked, bool &mouseDragged, bool &widgetFocused, int x, int y) {
+		if (frame) {
+			x -= (int)frame->x;
+			y -= (int)frame->y;
+		}
 		mousePos.x = (float)x * mscale.x;
 		mousePos.y = (float)y * mscale.y;
 		if (!mouseDown) {
@@ -2456,7 +2460,7 @@ void CodeEdit::updateMouseStates(int mouseClickCount, const Vec2* scale) {
 			x_ = (int)(finger->x * ((float)dispw - CODE_EDIT_EPSILON));
 			y_ = (int)(finger->y * ((float)disph - CODE_EDIT_EPSILON));
 
-			clicked(getWidgetPos(), getWidgetSize(), mscale, _mousePos, _mouseDownPos, _mouseDown, _mousePressed, _mouseDragged, _widgetFocused, x_, y_);
+			clicked(frame, getWidgetPos(), getWidgetSize(), mscale, _mousePos, _mouseDownPos, _mouseDown, _mousePressed, _mouseDragged, _widgetFocused, x_, y_);
 
 			return;
 		} while (false);
@@ -2464,11 +2468,15 @@ void CodeEdit::updateMouseStates(int mouseClickCount, const Vec2* scale) {
 
 	Uint32 btns = SDL_GetMouseState(&x_, &y_);
 	if (!!(btns & SDL_BUTTON(SDL_BUTTON_LEFT))) {
-		clicked(getWidgetPos(), getWidgetSize(), mscale, _mousePos, _mouseDownPos, _mouseDown, _mousePressed, _mouseDragged, _widgetFocused, x_, y_);
+		clicked(frame, getWidgetPos(), getWidgetSize(), mscale, _mousePos, _mouseDownPos, _mouseDown, _mousePressed, _mouseDragged, _widgetFocused, x_, y_);
 
 		return;
 	}
 
+	if (frame) {
+		x_ -= (int)frame->x;
+		y_ -= (int)frame->y;
+	}
 	_mousePos.x = (float)x_ * mscale.x;
 	_mousePos.y = (float)y_ * mscale.y;
 

@@ -85,6 +85,32 @@ public:
 		}
 	};
 
+	struct Vec4 {
+		float x = 0.0f, y = 0.0f;
+		float width = 0.0f, height = 0.0f;
+
+		Vec4() {
+			x = y = 0.0f;
+			width = height = 0.0f;
+		}
+		Vec4(float _x, float _y, float _w, float _h) {
+			x = _x;
+			y = _y;
+			width = _w;
+			height = _h;
+		}
+		const float &operator[] (size_t idx) const {
+			assert(idx <= 3);
+
+			return (&x)[idx];
+		}
+		float &operator[] (size_t idx) {
+			assert(idx <= 3);
+
+			return (&x)[idx];
+		}
+	};
+
 	struct Breakpoint {
 		int line = -1;
 		bool enabled = false;
@@ -344,7 +370,7 @@ public:
 	bool isMouseDoubleClicked(void) const;
 	bool isMouseDragging(void) const;
 	bool isMouseDown(void) const;
-	void updateMouseStates(int mouseClickCount, const Vec2* scale);
+	void updateMouseStates(int mouseClickCount, const Vec4* frame, const Vec2* scale);
 
 	static const Palette &DarkPalette(void);
 	static const Palette &LightPalette(void);
