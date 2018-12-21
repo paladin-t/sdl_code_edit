@@ -274,6 +274,7 @@ public:
 	void setMouseCursorChangedHandler(const MouseCursorChanged &handler);
 	void setChangesCleared(void);
 	void setChangesSaved(void);
+	bool isChangesSaved(void) const;
 
 	std::vector<std::string> getTextLines(bool includeComment, bool includeString) const;
 	std::string getText(const char* newLine = "\n") const;

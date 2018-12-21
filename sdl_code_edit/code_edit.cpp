@@ -1532,6 +1532,10 @@ void CodeEdit::setChangesSaved(void) {
 	}
 }
 
+bool CodeEdit::isChangesSaved(void) const {
+	return _savedIndex == _undoIndex;
+}
+
 std::vector<std::string> CodeEdit::getTextLines(bool includeComment, bool includeString) const {
 	std::vector<std::string> result;
 	for (const Line &ln : _codeLines) {
