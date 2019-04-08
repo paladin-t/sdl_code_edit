@@ -784,7 +784,9 @@ CodeEdit::LanguageDefinition CodeEdit::LanguageDefinition::BASIC8(void) {
 			"zip", "unpack_all",
 			"compress", "decompress",
 			/* Plugin primitives. */
-			"cls", "sync", "col", "clip", "camera", "font", "text", "line", "circ", "circfill", "ellipse", "ellipsefill", "rect", "rectfill", "tri", "trifill", "tritex", "quad", "quadfill", "spr", "sspr", "step_on", "map", "img", "simg",
+			"cls", "sync", "col", "clip", "camera", "font",
+			"text", "plot", "line", "circ", "circfill", "ellipse", "ellipsefill", "arc", "arcfill", "rect", "rectfill", "tri", "trifill", "tritex", "quad", "quadfill",
+			"spr", "sspr", "step_on", "map", "img", "simg",
 			"pget", "pset", "sget", "sset", "mget", "mset", "iget", "iset",
 			"key", "keyp", "touch", "btn", "btnp"
 		};
